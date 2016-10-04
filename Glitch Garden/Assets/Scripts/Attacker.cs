@@ -10,6 +10,10 @@ public class Attacker : MonoBehaviour {
 	//allows us to change the walkSpeed float variable within the pre defined range
 	//[Range (-1f, 1.5f)] public float currentSpeed; - made private
 
+	//tooltiup pops up over theinspector when your mouse hovers the variable space
+	[Tooltip ("Average number of seconds between appearences")]
+	public float seenEverySeconds;
+
 	private float currentSpeed;
 	private GameObject currentTarget;
 	private Animator anim;
