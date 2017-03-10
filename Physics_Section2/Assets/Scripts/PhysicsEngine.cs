@@ -7,43 +7,74 @@ public class PhysicsEngine : MonoBehaviour {
 	public float mass;
 	public Vector3 velocityVector;	//average velocity for fixedUpdate()
 	public Vector3 netForceVector;
-	public List<Vector3> forceVectorList = new List<Vector3> ();	//add multiple forces to object
+
+	private List<Vector3> forceVectorList = new List<Vector3> ();	//add multiple forces to object
 
 	// Use this for initialization
 	void Start () {
-	
+		forceTrails ();
 	}
 	//called at a constant 20ms
 	void FixedUpdate() {
-		AddForces ();
-		UpdateVelocity ();
-
-		//update position
-		transform.position += velocityVector * Time.deltaTime;
-
-
-		/* no longer detecting a change of net velocity
-		if (netForceVector == Vector3.zero) {	//if no net force
-			//adding to the current position the ammount of displacment velocityVector
-			transform.position += velocityVector * Time.deltaTime;
-		} else { //if net force unbalanced
-			Debug.LogError("Unbalanced for detected, help !");
-		}
-		*/
+		renderTrails ();
+		updatePosition ();
 	}
 
-	void AddForces () {
-		netForceVector = Vector3.zero;
-		//for each force vector of type V3 in the FVL list 
-		foreach (Vector3 forceVector in forceVectorList) {
-			netForceVector = netForceVector + forceVector;
-		}	//add all the forces and outputs results
+	public void AddForce(Vector3 forceVector) {
+		forceVectorList.Add (forceVector);
 	}
 
 	//Newtons second law of motion
-	void UpdateVelocity () {
+	void updatePosition () {
+		//sum the forces and clear list
+		netForceVector = Vector3.zero;
+		foreach (Vector3 forceVector in forceVectorList) {
+			netForceVector = netForceVector + forceVector;
+		}
+
+		forceVectorList = new List<Vector3> ();	//clear the list
+
+		//calculate position change due to net force
 		Vector3 accelerationVector = netForceVector / mass;	// F = ma
 		//change of velocity depends on duration of force
 		velocityVector += accelerationVector * Time.deltaTime;
+
+		//update position
+		transform.position += velocityVector * Time.deltaTime;
 	}
+
+
+	//code for drawing trails
+	public bool showTrails = true;
+
+	private LineRenderer lineRenderer;
+	private int numberOfForces;
+
+	// Use this for initialization
+	void forceTrails () {
+		lineRenderer = gameObject.AddComponent<LineRenderer>();
+		lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+		lineRenderer.SetColors(Color.yellow, Color.yellow);
+		lineRenderer.SetWidth(0.2F, 0.2F);
+		lineRenderer.useWorldSpace = false;
+	}
+
+	// Update is called once per frame
+	void renderTrails () {
+		if (showTrails) {
+			lineRenderer.enabled = true;
+			numberOfForces = forceVectorList.Count;
+			lineRenderer.SetVertexCount(numberOfForces * 2);
+			int i = 0;
+			foreach (Vector3 forceVector in forceVectorList) {
+				lineRenderer.SetPosition(i, Vector3.zero);
+				lineRenderer.SetPosition(i+1, -forceVector);
+				i = i + 2;
+			}
+		} else {
+			lineRenderer.enabled = false;
+		}
+	}
+
 }
+
