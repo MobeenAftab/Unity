@@ -3,64 +3,63 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class PhysicsEngine : MonoBehaviour {
-
-	public float mass;
-	public Vector3 velocityVector;	//average velocity for fixedUpdate()
-	public Vector3 netForceVector;
-
-	private List<Vector3> forceVectorList = new List<Vector3> ();	//add multiple forces to object
-
+	public float mass;				// [kg]
+	public Vector3 velocityVector;  // [m s^-1]
+	public Vector3 netForceVector;  // N [kg m s^-2]
+	
+	private List<Vector3> forceVectorList = new List<Vector3>();
+	
 	// Use this for initialization
 	void Start () {
-		forceTrails ();
+		SetupThrustTrails();
+		
 	}
-	//called at a constant 20ms
-	void FixedUpdate() {
-		renderTrails ();
-		updatePosition ();
+	
+	void FixedUpdate () {
+		RenderTrails ();
+		UpdatePosition ();
 	}
-
-	public void AddForce(Vector3 forceVector) {
+	
+	public void AddForce (Vector3 forceVector) {
 		forceVectorList.Add (forceVector);
+		Debug.Log ("Adding force " + forceVector + " to " + gameObject.name);
 	}
-
-	//Newtons second law of motion
-	void updatePosition () {
-		//sum the forces and clear list
+	
+	void UpdatePosition () {
+		// Sum the forces and clear the list
 		netForceVector = Vector3.zero;
 		foreach (Vector3 forceVector in forceVectorList) {
 			netForceVector = netForceVector + forceVector;
 		}
-
-		forceVectorList = new List<Vector3> ();	//clear the list
-
-		//calculate position change due to net force
-		Vector3 accelerationVector = netForceVector / mass;	// F = ma
-		//change of velocity depends on duration of force
+		forceVectorList = new List<Vector3>();
+		
+		// Calculate position change due to net force
+		Vector3 accelerationVector = netForceVector / mass;
 		velocityVector += accelerationVector * Time.deltaTime;
-
-		//update position
 		transform.position += velocityVector * Time.deltaTime;
 	}
-
-
-	//code for drawing trails
+	
+	
+	
+	/// <summary>
+	/// Code for drawing thrust tails
+	/// </summary>
 	public bool showTrails = true;
-
+	
 	private LineRenderer lineRenderer;
 	private int numberOfForces;
-
+	
 	// Use this for initialization
-	void forceTrails () {
+	void SetupThrustTrails () {
 		lineRenderer = gameObject.AddComponent<LineRenderer>();
 		lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
 		lineRenderer.SetColors(Color.yellow, Color.yellow);
 		lineRenderer.SetWidth(0.2F, 0.2F);
 		lineRenderer.useWorldSpace = false;
 	}
-
+	
 	// Update is called once per frame
-	void renderTrails () {
+	void RenderTrails () {
 		if (showTrails) {
 			lineRenderer.enabled = true;
 			numberOfForces = forceVectorList.Count;
@@ -75,6 +74,4 @@ public class PhysicsEngine : MonoBehaviour {
 			lineRenderer.enabled = false;
 		}
 	}
-
 }
-
