@@ -22,6 +22,10 @@ public class PlayerMovement : MonoBehaviour {
 		if (Input.GetKey(KeyCode.A)) {
 			rb.AddForce (-xforce * Time.deltaTime, 0, 0, ForceMode.VelocityChange);
 		}
+
+		if (rb.position.y < -2f) {
+			FindObjectOfType<GameManager>().GameOver();
+		}
 	}
 
 }
