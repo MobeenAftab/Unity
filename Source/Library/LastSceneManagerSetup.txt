@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/End.unity
+- path: Assets/BlockRun_1.unity
   isLoaded: 1
   isActive: 1
