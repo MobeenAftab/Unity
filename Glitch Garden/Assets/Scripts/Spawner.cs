@@ -43,6 +43,6 @@ public class Spawner : MonoBehaviour {
 		} else {
 			return false;
 		}
-		return true;
+		//return true;
 	}
 }
