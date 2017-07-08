@@ -6,8 +6,12 @@ public class DefenderSpawner : MonoBehaviour {
 	public Camera myCamera;
 
 	private GameObject defenderParent;
+	private StarDisplay starDisplay;
 
 	void Start() {
+
+		starDisplay = GameObject.FindObjectOfType<StarDisplay> ();
+
 		//sub all defender spws under one defender element in the inspector - like the projectile object
 		defenderParent = GameObject.Find ("Defenders");
 		if(!defenderParent) {
@@ -24,10 +28,25 @@ public class DefenderSpawner : MonoBehaviour {
 		Vector2 rawPos = CalculateWorldPointOfMouseClick();	//get raw position
 		Vector2 roundedPos = SnapToGrid (rawPos);	//use method to round
 		GameObject defender = Button.selectedDefender;	//get selected defender
-		Quaternion zeroRotation = Quaternion.identity; //unity required var in instantiate
-		GameObject newDef = Instantiate (defender, roundedPos, zeroRotation) as GameObject;	
+
+		//Get cost of each defender
+		int defenderCost = defender.GetComponent<Defender>().starCost;
+		//Only spawn defender if enough starts
+		if (starDisplay.UseStar (defenderCost) == StarDisplay.Status.SUCCESS) {
+			SpawnDefender (roundedPos, defender);
+		} else {
+			Debug.Log ("Not enough Starts to spawn!");
+		}
+	}
+
+	void SpawnDefender (Vector2 roundedPos, GameObject defender) {
+		
+		Quaternion zeroRotation = Quaternion.identity;
+		//unity required var in instantiate
+		GameObject newDef = Instantiate (defender, roundedPos, zeroRotation) as GameObject;
 		//instanciates new defenders and spawns them at rounded position under defender element
-		newDef.transform.parent = defenderParent.transform;	//assigns defenders a parent def on spawn
+		newDef.transform.parent = defenderParent.transform;
+		//assigns defenders a parent def on spawn
 	}
 
 	//get unrounded world space pos and round to grid center
