@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 21281856}
   m_Layer: 0
   m_Name: Gnome
-  m_TagString: Untagged
+  m_TagString: DestroyOnWin
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

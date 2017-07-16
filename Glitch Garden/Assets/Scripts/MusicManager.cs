@@ -22,7 +22,8 @@ public class MusicManager : MonoBehaviour {
 	}
 	// Use this for initialization
 	void Start () {
-		 audioSource = GetComponent<AudioSource> ();
+		audioSource = GetComponent<AudioSource> ();
+		audioSource.volume = PlayerPrefsManager.GetMasterVolume ();
 	}
 
 	// keyword method is loaded as soon as scene was loaded

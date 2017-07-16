@@ -40,15 +40,28 @@ public class GameTimer : MonoBehaviour {
 		slider.value = Time.timeSinceLevelLoad / totalTime;
 
 		if (Time.timeSinceLevelLoad >= totalTime && !isGameOver) {
-			AS.Play ();
-			levelComplete.SetActive (true);
-			Invoke ("LoadNextLevel", AS.clip.length);
-			isGameOver = true;
+			WinCondition ();
 		}
 	}
 
 	void LoadNextLevel () {
 
 		LM.LoadNextLevel ();
+	}
+
+	void WinCondition () {
+		DestroyAllTaggedObjects();
+		AS.Play();
+		levelComplete.SetActive (true);
+		Invoke("LoadNextLevel", AS.clip.length);
+		isGameOver = true;
+	}
+
+	void DestroyAllTaggedObjects () {
+		GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag("DestroyOnWin");
+
+		foreach (GameObject tagObj in taggedObjects) {
+			Destroy(tagObj);
+		}
 	}
 }
