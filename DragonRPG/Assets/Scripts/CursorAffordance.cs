@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class Cursor : MonoBehaviour {
+// An affordance is the possibillity of an action on an object or enviroment
+public class CursorAffordance : MonoBehaviour {
 
 	CameraRaycaster CR;
 
