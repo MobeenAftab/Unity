@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/_Scenes/02 Football.unity
-  isLoaded: 1
-  isActive: 1
