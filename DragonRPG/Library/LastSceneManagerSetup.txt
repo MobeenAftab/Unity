@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/_Scene/Combat Sandbox.unity
-  isLoaded: 1
-  isActive: 1

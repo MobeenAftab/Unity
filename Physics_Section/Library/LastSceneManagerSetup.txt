@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/_Scenes/03 Rotation.unity
-  isLoaded: 1
-  isActive: 1
