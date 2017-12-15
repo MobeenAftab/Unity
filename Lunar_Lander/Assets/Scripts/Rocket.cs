@@ -4,30 +4,54 @@ using UnityEngine;
 
 public class Rocket : MonoBehaviour {
 
+    [SerializeField] float rcsThrust = 100f;
+    [SerializeField] float mainThrust = 100f;
+
 	Rigidbody rigidBody;
+    AudioSource audioSource;
 
 	// Use this for initialization
 	void Start () {
 		// Get rigidBody of rocket ship
 		rigidBody = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		processInput();
+        thrust();
+        rotate();
 	}
 
-	private void processInput() {
-		if (Input.GetKey(KeyCode.Space)) {
-			rigidBody.AddRelativeForce(Vector3.up);
-		}
+    private void rotate() {
+        // Take manual control of rocket rotation
+        rigidBody.freezeRotation = true;
+
+        // Manually set rotation speed of rocket
+        float rotationThisFrame = rcsThrust * Time.deltaTime;
 
 		if (Input.GetKey(KeyCode.A)) {
-            transform.Rotate(Vector3.forward);
+            transform.Rotate(Vector3.forward * rotationThisFrame);
 		} else if (Input.GetKey(KeyCode.D)) {
-            transform.Rotate(-Vector3.forward);
+            transform.Rotate(-Vector3.forward * rotationThisFrame);
 		}
 
+        // Return rotation control
+        rigidBody.freezeRotation = false;
 	}
+
+    private void thrust() {
+        if (Input.GetKey(KeyCode.Space)) {
+            rigidBody.AddRelativeForce(Vector3.up * mainThrust);
+        }
+    }
+
+    private void playAudio() {
+        if (!audioSource.isPlaying) {
+            audioSource.Play();
+        } else {
+            audioSource.Stop();
+        }
+    }
 
 }
