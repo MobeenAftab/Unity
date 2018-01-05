@@ -9,7 +9,12 @@ public class Rocket : MonoBehaviour {
 
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
+    [SerializeField] AudioClip mainEngine_SFX;
+    [SerializeField] AudioClip death_SFX;
+    [SerializeField] AudioClip levelComplete_SFX;
+
     float transitionDelay = 1f;
+    float SFXVolume = 1f;
 
 	Rigidbody rigidBody;
     AudioSource audioSource;
@@ -52,15 +57,30 @@ public class Rocket : MonoBehaviour {
     private void thrust() {
         if (Input.GetKey(KeyCode.Space)) {
             rigidBody.AddRelativeForce(Vector3.up * mainThrust);
+            playAudio(mainEngine_SFX, SFXVolume);
         }
     }
 
-    private void playAudio() {
+    private void playAudio(AudioClip sound, float volume) {
         if (!audioSource.isPlaying) {
-            audioSource.Play();
+            audioSource.PlayOneShot(sound, volume);
         } else {
             audioSource.Stop();
         }
+    }
+
+    private void levelComplete() {
+        state = State.Transcending;
+        playAudio(levelComplete_SFX, SFXVolume);
+        Invoke("loadNextLevel", transitionDelay);
+    }
+
+    private void playerDeath() {
+        print("You Died");
+        audioSource.Stop();
+        state = State.Dying;
+        playAudio(death_SFX, SFXVolume);
+        Invoke("loadFirstLevel", transitionDelay);
     }
 
     void OnCollisionEnter(Collision collision) {
@@ -76,13 +96,10 @@ public class Rocket : MonoBehaviour {
                 print("OK");
                 break;
             case "Finish":
-                state = State.Transcending;
-                Invoke("loadNextLevel", transitionDelay);
+                levelComplete();
                 break;
             default:
-                print("You Died");
-                state = State.Dying;
-                Invoke("loadFirstLevel", transitionDelay);
+                playerDeath();
                 break;
         }
 	}
