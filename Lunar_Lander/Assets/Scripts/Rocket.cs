@@ -9,9 +9,14 @@ public class Rocket : MonoBehaviour {
 
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
+
     [SerializeField] AudioClip mainEngine_SFX;
     [SerializeField] AudioClip death_SFX;
     [SerializeField] AudioClip levelComplete_SFX;
+
+    [SerializeField] ParticleSystem mainEngine_Particles;
+    [SerializeField] ParticleSystem death_Particles;
+    [SerializeField] ParticleSystem levelComplete_Particles;
 
     float transitionDelay = 1f;
     float SFXVolume = 1f;
@@ -58,6 +63,10 @@ public class Rocket : MonoBehaviour {
         if (Input.GetKey(KeyCode.Space)) {
             rigidBody.AddRelativeForce(Vector3.up * mainThrust);
             playAudio(mainEngine_SFX, SFXVolume);
+            mainEngine_Particles.Play();
+        } else {
+            audioSource.Stop();
+            mainEngine_Particles.Stop();
         }
     }
 
@@ -71,6 +80,7 @@ public class Rocket : MonoBehaviour {
 
     private void levelComplete() {
         state = State.Transcending;
+        levelComplete_Particles.Play();
         playAudio(levelComplete_SFX, SFXVolume);
         Invoke("loadNextLevel", transitionDelay);
     }
@@ -79,6 +89,7 @@ public class Rocket : MonoBehaviour {
         print("You Died");
         audioSource.Stop();
         state = State.Dying;
+        death_Particles.Play();
         playAudio(death_SFX, SFXVolume);
         Invoke("loadFirstLevel", transitionDelay);
     }
