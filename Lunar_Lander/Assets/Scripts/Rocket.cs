@@ -9,6 +9,7 @@ public class Rocket : MonoBehaviour {
 
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
+    [SerializeField] float transitionDelay = 2f;
 
     [SerializeField] AudioClip mainEngine_SFX;
     [SerializeField] AudioClip death_SFX;
@@ -18,7 +19,6 @@ public class Rocket : MonoBehaviour {
     [SerializeField] ParticleSystem death_Particles;
     [SerializeField] ParticleSystem levelComplete_Particles;
 
-    float transitionDelay = 1f;
     float SFXVolume = 1f;
 
 	Rigidbody rigidBody;
@@ -61,7 +61,7 @@ public class Rocket : MonoBehaviour {
 
     private void thrust() {
         if (Input.GetKey(KeyCode.Space)) {
-            rigidBody.AddRelativeForce(Vector3.up * mainThrust);
+            rigidBody.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
             playAudio(mainEngine_SFX, SFXVolume);
             mainEngine_Particles.Play();
         } else {
