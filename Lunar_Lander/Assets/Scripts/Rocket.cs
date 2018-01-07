@@ -25,8 +25,7 @@ public class Rocket : MonoBehaviour {
 	Rigidbody rigidBody;
     AudioSource audioSource;
 
-    enum State { Alive, Dying, Transcending }
-    State state = State.Alive;
+    bool isTansitioning = false;
 
 	// Use this for initialization
 	void Start () {
@@ -37,7 +36,7 @@ public class Rocket : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (state == State.Alive) {
+        if (!isTansitioning) {
             thrust();
             rotate();   
         }
@@ -57,8 +56,8 @@ public class Rocket : MonoBehaviour {
     }
 
     private void rotate() {
-        // Take manual control of rocket rotation
-        rigidBody.freezeRotation = true;
+        // Remove rotation due to physics
+        rigidBody.angularVelocity = Vector3.zero;
 
         // Manually set rotation speed of rocket
         float rotationThisFrame = rcsThrust * Time.deltaTime;
@@ -68,9 +67,6 @@ public class Rocket : MonoBehaviour {
 		} else if (Input.GetKey(KeyCode.D)) {
             transform.Rotate(-Vector3.forward * rotationThisFrame);
         }
-
-        // Return rotation control
-        rigidBody.freezeRotation = false;
 	}
 
     private void thrust() {
@@ -93,7 +89,7 @@ public class Rocket : MonoBehaviour {
     }
 
     private void levelComplete() {
-        state = State.Transcending;
+        isTansitioning = true;
         levelComplete_Particles.Play();
         playAudio(levelComplete_SFX, SFXVolume);
         Invoke("loadNextLevel", transitionDelay);
@@ -102,7 +98,7 @@ public class Rocket : MonoBehaviour {
     private void playerDeath() {
         print("You Died");
         audioSource.Stop();
-        state = State.Dying;
+        isTansitioning = true;
         death_Particles.Play();
         playAudio(death_SFX, SFXVolume);
         Invoke("loadFirstLevel", transitionDelay);
@@ -111,7 +107,7 @@ public class Rocket : MonoBehaviour {
     void OnCollisionEnter(Collision collision) {
 
         // Exit method gaurd condition
-        if (state != State.Alive || !collisionsActive) {
+        if (isTansitioning || !collisionsActive) {
             return;
         }
 
