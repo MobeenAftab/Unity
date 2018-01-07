@@ -20,6 +20,7 @@ public class Rocket : MonoBehaviour {
     [SerializeField] ParticleSystem levelComplete_Particles;
 
     float SFXVolume = 1f;
+    bool collisionsActive = true;
 
 	Rigidbody rigidBody;
     AudioSource audioSource;
@@ -40,7 +41,20 @@ public class Rocket : MonoBehaviour {
             thrust();
             rotate();   
         }
+        // Keys only active during debug mode
+        if (Debug.isDebugBuild) {
+            debugKeys();
+        }
 	}
+
+    // Debug keys for run time
+    private void debugKeys() {
+        if (Input.GetKeyDown(KeyCode.L)) {
+            levelComplete();
+        } else if (Input.GetKeyDown(KeyCode.C)) {
+            collisionsActive = !collisionsActive;
+        }
+    }
 
     private void rotate() {
         // Take manual control of rocket rotation
@@ -53,7 +67,7 @@ public class Rocket : MonoBehaviour {
             transform.Rotate(Vector3.forward * rotationThisFrame);
 		} else if (Input.GetKey(KeyCode.D)) {
             transform.Rotate(-Vector3.forward * rotationThisFrame);
-		}
+        }
 
         // Return rotation control
         rigidBody.freezeRotation = false;
@@ -97,7 +111,7 @@ public class Rocket : MonoBehaviour {
     void OnCollisionEnter(Collision collision) {
 
         // Exit method gaurd condition
-        if (state != State.Alive) {
+        if (state != State.Alive || !collisionsActive) {
             return;
         }
 
@@ -116,7 +130,14 @@ public class Rocket : MonoBehaviour {
 	}
 
     private void loadNextLevel() {
-        SceneManager.LoadScene(1);
+        int currentScene = SceneManager.GetActiveScene().buildIndex;
+        int nextScene = currentScene + 1;
+
+        if (SceneManager.sceneCountInBuildSettings != nextScene) {
+            SceneManager.LoadScene(nextScene);
+        } else {
+            loadFirstLevel();
+        }
     }
 
     private void loadFirstLevel() {
